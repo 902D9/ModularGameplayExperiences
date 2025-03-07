@@ -30,8 +30,10 @@ void UModularGameInstance::Init()
 		ComponentManager->RegisterInitState(ModularGameplayTags::InitState_GameplayReady, false, ModularGameplayTags::InitState_DataInitialized);
 	}
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 	if (UCommonSessionSubsystem* SessionSubsystem = GetSubsystem<UCommonSessionSubsystem>())
 	{
 		SessionSubsystem->OnPreClientTravelEvent.AddUObject(this, &UModularGameInstance::OnPreClientTravelToSession);
 	}
+#endif
 }

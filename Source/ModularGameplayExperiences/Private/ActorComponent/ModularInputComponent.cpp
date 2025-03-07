@@ -16,7 +16,9 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerState.h"
 #include "Misc/UObjectToken.h"
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 #include "UserSettings/EnhancedInputUserSettings.h"
+#endif
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ModularInputComponent)
 
@@ -318,10 +320,12 @@ void UModularInputComponent::InputActionMapping(UInputComponent* PlayerInputComp
 		const UInputMappingContext* InputMappingContext = InputMapping.Get();
 		if (!InputMappingContext || !bRegisterWithSettings) continue;
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 		if (UEnhancedInputUserSettings* Settings = Subsystem->GetUserSettings())
 		{
 			Settings->RegisterInputMappingContext(InputMappingContext);
 		}
+#endif	
 
 		FModifyContextOptions Options = {};
 		Options.bIgnoreAllPressedKeysUntilRelease = false;

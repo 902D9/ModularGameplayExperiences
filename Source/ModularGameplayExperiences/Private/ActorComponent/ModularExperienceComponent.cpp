@@ -406,8 +406,12 @@ void UModularExperienceComponent::EndPlay(const EEndPlayReason::Type EndPlayReas
 		NumObservedPausers = 0;
 
 		// Deactivate and unload the actions
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 		FGameFeatureDeactivatingContext Context(TEXT(""), [this](FStringView) { this->OnActionDeactivationCompleted(); });
-
+#else
+		FGameFeatureDeactivatingContext Context(FSimpleDelegate::CreateUObject(this, &ThisClass::OnActionDeactivationCompleted));
+#endif
+		
 		if (const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld()))
 		{
 			Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);

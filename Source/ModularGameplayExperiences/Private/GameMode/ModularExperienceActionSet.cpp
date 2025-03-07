@@ -15,6 +15,7 @@ UModularExperienceActionSet::UModularExperienceActionSet()
 }
 
 #if WITH_EDITOR
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 EDataValidationResult UModularExperienceActionSet::IsDataValid(FDataValidationContext& Context) const
 {
 	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(Context), EDataValidationResult::Valid);
@@ -38,6 +39,31 @@ EDataValidationResult UModularExperienceActionSet::IsDataValid(FDataValidationCo
 
 	return Result;
 }
+#else
+EDataValidationResult UModularExperienceActionSet::IsDataValid(TArray<FText>& ValidationErrors)
+{
+	EDataValidationResult Result = CombineDataValidationResults(Super::IsDataValid(ValidationErrors), EDataValidationResult::Valid);
+
+	int32 EntryIndex = 0;
+	for (UGameFeatureAction* Action : Actions)
+	{
+		if (Action)
+		{
+			EDataValidationResult ChildResult = Action->IsDataValid(ValidationErrors);
+			Result = CombineDataValidationResults(Result, ChildResult);
+		}
+		else
+		{
+			Result = EDataValidationResult::Invalid;
+			ValidationErrors.Add(FText::Format(LOCTEXT("ActionEntryIsNull", "Null entry at index {0} in Actions"), FText::AsNumber(EntryIndex)));
+		}
+
+		++EntryIndex;
+	}
+
+	return Result;
+}
+#endif
 #endif
 
 #if WITH_EDITORONLY_DATA
