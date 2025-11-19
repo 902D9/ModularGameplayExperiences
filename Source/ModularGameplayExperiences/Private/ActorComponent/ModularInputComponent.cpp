@@ -116,54 +116,6 @@ void UModularInputComponent::CheckDefaultInitialization()
 	ContinueInitStateChain(StateChain);
 }
 
-FGameplayTag UModularInputComponent::ContinueInitStateChain(const TArray<FGameplayTag>& InitStateChain)
-{
-	UObject* ThisObject = Cast<UObject>(this);
-	AActor* MyActor = GetOwningActor();
-	UGameFrameworkComponentManager* Manager = UGameFrameworkComponentManager::GetForActor(MyActor);
-	const FName MyFeatureName = GetFeatureName();
-
-	if (!Manager || !ThisObject || !MyActor)
-	{
-		return FGameplayTag();
-	}
-
-	int32 ChainIndex = 0;
-	FGameplayTag CurrentState = Manager->GetInitStateForFeature(MyActor, MyFeatureName);
-
-	// For each state in chain before the last, see if we can transition to the next state
-	while (ChainIndex < InitStateChain.Num() - 1)
-	{
-		if (CurrentState == InitStateChain[ChainIndex])
-		{
-			FGameplayTag DesiredState = InitStateChain[ChainIndex + 1];
-			if (CanChangeInitState(Manager, CurrentState, DesiredState))
-			{
-				UE_LOG(LogModularGameplayExperiences, Verbose, TEXT("ContinueInitStateChain: Transitioning %s:%s (role %d) from %s to %s"),
-					*MyActor->GetName(), *MyFeatureName.ToString(), MyActor->GetLocalRole(), *CurrentState.ToString(), *DesiredState.ToString());
-
-				// Perform the local change
-				HandleChangeInitState(Manager, CurrentState, DesiredState);
-
-				// The local change has completed, notify the system to register change and execute callbacks
-				ensure(Manager->ChangeFeatureInitState(MyActor, MyFeatureName, ThisObject, DesiredState));
-
-				// Update state and check again
-				CurrentState = Manager->GetInitStateForFeature(MyActor, MyFeatureName);
-			}
-			else
-			{
-				UE_LOG(LogModularGameplayExperiences, Verbose, TEXT("ContinueInitStateChain: Cannot transition %s:%s (role %d) from %s to %s"),
-					*MyActor->GetName(), *MyFeatureName.ToString(), MyActor->GetLocalRole(), *CurrentState.ToString(), *DesiredState.ToString());
-			}
-		}
-
-		ChainIndex++;
-	}
-
-	return CurrentState;
-}
-
 void UModularInputComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
 	if (CurrentState != ModularGameplayTags::InitState_DataAvailable
@@ -194,47 +146,10 @@ void UModularInputComponent::OnActorInitStateChanged(const FActorInitStateChange
 	{
 		if (Params.FeatureState == ModularGameplayTags::InitState_DataInitialized)
 		{
-			// If the extension component says all all other components are initialized, try to progress to next state.
+			// If the extension component says all other components are initialized, try to progress to next state.
 			CheckDefaultInitialization();
 		}
 	}
-}
-
-bool UModularInputComponent::TryToChangeInitState(FGameplayTag DesiredState)
-{
-	UObject* ThisObject = Cast<UObject>(this);
-	AActor* MyActor = GetOwningActor();
-	UGameFrameworkComponentManager* Manager = UGameFrameworkComponentManager::GetForActor(MyActor);
-	const FName MyFeatureName = GetFeatureName();
-
-	if (!Manager || !ThisObject || !MyActor)
-	{
-		return false;
-	}
-
-	const FGameplayTag CurrentState = Manager->GetInitStateForFeature(MyActor, MyFeatureName);
-
-	// If we're already in that state, just return
-	if (CurrentState == DesiredState)
-	{
-		return false;
-	}
-
-	if (!CanChangeInitState(Manager, CurrentState, DesiredState))
-	{
-		UE_LOG(LogModularGameplayExperiences, Verbose, TEXT("TryToChangeInitState: Cannot transition %s:%s (role %d) from %s to %s"),
-			*MyActor->GetName(), *MyFeatureName.ToString(), MyActor->GetLocalRole(), *CurrentState.ToString(), *DesiredState.ToString());
-		return false;
-	}
-
-	UE_LOG(LogModularGameplayExperiences, Verbose, TEXT("TryToChangeInitState: Transitioning %s:%s (role %d) from %s to %s"),
-		*MyActor->GetName(), *MyFeatureName.ToString(), MyActor->GetLocalRole(), *CurrentState.ToString(), *DesiredState.ToString());
-
-	// Perform the local change
-	HandleChangeInitState(Manager, CurrentState, DesiredState);
-
-	// The local change has completed, notify the system to register change and execute callbacks
-	return ensure(Manager->ChangeFeatureInitState(MyActor, MyFeatureName, ThisObject, DesiredState));
 }
 
 void UModularInputComponent::OnRegister()

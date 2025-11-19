@@ -60,13 +60,9 @@ public:
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
 		FGameplayTag DesiredState) const override;
 	virtual void CheckDefaultInitialization() override;
-	// @todo Remove this, for debugging purposes.
-	virtual FGameplayTag ContinueInitStateChain(const TArray<FGameplayTag>& InitStateChain) override;
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
 		FGameplayTag DesiredState) override;
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
-	// @todo Remove this, for debugging purposes.
-	virtual bool TryToChangeInitState(FGameplayTag DesiredState) override;
 	/** @} */
 
 	/** @ingroup UActorComponent @{ */
