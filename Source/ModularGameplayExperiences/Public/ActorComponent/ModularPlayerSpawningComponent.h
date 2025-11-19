@@ -36,12 +36,12 @@ public:
 	 */
 
 public:
-	/** We proxy these calls from ALyraGameMode, to this component so that each experience can more easily customize the respawn system they want. */
+	/** We proxy these calls from AModularExperienceGameMode, to this component so that each experience can more easily customize the respawn system they want. */
 	AActor* ChoosePlayerStart(AController* Player);
 	bool ControllerCanRestart(AController* Player);
 	void FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation);
-	friend class ALyraGameMode;
-	/** ~ALyraGameMode */
+	friend class AModularExperienceGameMode;
+	/** ~AModularExperienceGameMode */
 
 protected:
 	// Utility

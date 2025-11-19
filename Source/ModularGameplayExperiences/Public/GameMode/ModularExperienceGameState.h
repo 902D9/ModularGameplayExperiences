@@ -4,7 +4,6 @@
 
 #include "ModularGameState.h"
 #include "ActorComponent/ModularExperienceComponent.h"
-#include "ActorComponent/ModularPlayerSpawningComponent.h"
 #include "Messages/ModularVerbMessage.h"
 
 #include "ModularExperienceGameState.generated.h"
@@ -63,10 +62,6 @@ private:
 	// Handles loading and managing the current gameplay experience
 	UPROPERTY()
 	TObjectPtr<UModularExperienceComponent> ModularExperienceComponent;
-
-private:
-	UPROPERTY(Replicated)
-	TObjectPtr<UModularPlayerSpawningComponent> ModularPlayerSpawningComponent;
 
 protected:
 	UPROPERTY(Replicated)

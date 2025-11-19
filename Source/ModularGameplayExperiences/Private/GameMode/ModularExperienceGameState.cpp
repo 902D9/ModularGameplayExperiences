@@ -26,7 +26,6 @@ AModularExperienceGameState::AModularExperienceGameState(const FObjectInitialize
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	ModularExperienceComponent = CreateDefaultSubobject<UModularExperienceComponent>(TEXT("ModularExperienceComponent"));
-	ModularPlayerSpawningComponent = CreateDefaultSubobject<UModularPlayerSpawningComponent>(TEXT("ModularPlayerSpawningComponent"));
 
 	ServerFPS = 0.0f;
 }
