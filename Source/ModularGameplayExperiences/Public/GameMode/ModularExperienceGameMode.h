@@ -16,7 +16,7 @@
  *
  * This is called after the player has finished initialization.
  */
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnModularGameModePlayerInitialized, AGameModeBase* /*GameMode*/, AController* /*NewPlayer*/);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnModularGameModePlayerInitialized, AGameModeBase*, GameMode, AController*, NewPlayer);
 
 /**
  * Game mode that defers to Gameplay Experiences for flexible functionality.
